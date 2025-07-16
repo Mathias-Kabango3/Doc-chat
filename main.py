@@ -161,3 +161,23 @@ async def chat_with_doc(request: QueryRequest):
         return {"answer": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    
+
+
+@app.get("/documents")
+async def get_all_documents():
+    """
+    Retrieves a list of all uploaded documents from the 'pdfs' bucket.
+    """
+    try:
+        files = supabase.storage.from_(PDF_BUCKET_NAME).list()
+        # The list contains more data, we just want the names
+        # filter out any potential system files like .emptyFolderPlaceholder
+        document_list = [
+            {"id": os.path.splitext(file['name'])[0], "name": file['name']}
+            for file in files if file['name'] != '.emptyFolderPlaceholder'
+        ]
+        return document_list
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+
