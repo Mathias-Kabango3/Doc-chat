@@ -135,15 +135,20 @@ async def chat_with_doc(request: QueryRequest):
 
         # Create the prompt template
         prompt = ChatPromptTemplate.from_template("""
-        Answer the following question based only on the provided context.
-        If you don't know the answer, just say that you don't know.
-        
-        <context>
-        {context}
-        </context>
+    You are a helpful and polite assistant. Your primary task is to answer questions about the provided document.
 
-        Question: {input}
-        """)
+    First, determine if the user's question can be answered using the information in the document context below.
+
+    - If the question can be answered from the context, provide a detailed answer based ONLY on that context.
+    - If the user's question is a simple greeting (like "hello", "hi"), a conversational pleasantry (like "how are you?"), or a thank you, respond politely as a friendly assistant.
+    - If the question is NOT related to the document's context and is NOT a simple conversational question, politely state that you can only answer questions about the provided document.
+
+    <context>
+    {context}
+    </context>
+
+    Question: {input}
+    """)
         
         # Create the chain
         llm = ChatOpenAI(model="gpt-4o")
